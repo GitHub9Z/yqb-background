@@ -1,0 +1,68 @@
+stages:
+  - test
+  - init
+  - install
+  - build
+  - upload 
+
+test_job: 
+  stage: test
+  script:
+    - echo $CI_PROJECT_NAME
+  tags: 
+    - imgker 
+ 
+init_job:
+  stage: init 
+  script: 
+    - COMMIT=$(git log --pretty=format:%H -1)
+    - PROJECT=$CI_PROJECT_NAME
+    - BRANCH=$CI_COMMIT_BRANCH
+    - SUBJECT=$(echo -n "$(git log --pretty=format:%s -1)" | xxd -ps | tr -d '\n' | sed -r 's/(..)/%\1/g')
+    - AUTHOR=$(git log --pretty=format:%an\<%ae\> -1)
+    - curl '/dbfe/git/create?project='$PROJECT'&branch='$BRANCH'&subject='$SUBJECT'&author='$AUTHOR'&commit='$COMMIT'&progress=0'
+    - echo $COMMIT > commit.txt
+    - curl '/dbfe/git/update?commit='$COMMIT'&progress=10'
+  tags:
+    - imgker
+ 
+install_job:
+  stage: install
+  variables:
+    GIT_STRATEGY: none
+  script: 
+    - yarn install
+    - curl '/dbfe/git/update?commit='$(cat commit.txt)'&progress=30'
+  tags:
+    - imgker
+  cache:
+    key: ${CI_PROJECT_NAME}
+    paths:
+      - node_modules/
+
+build_job:
+  stage: build
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - yarn build 
+    - curl '/dbfe/git/update?commit='$(cat commit.txt)'&progress=70'
+  tags:  
+    - imgker
+
+upload_job:
+  stage: upload
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - mkdir dist_new
+    - mv ./dist ./dist_new 
+    - COMMIT=$(cat commit.txt)
+    - ossutil64 cp -r ./dist_new oss://jsonote/$COMMIT > lll.txt
+    - curl '/dbfe/git/update?commit='$(cat commit.txt)'&progress=100'
+    - rm -rf ./dist
+    - rm -rf ./dist_new 
+    - rm -rf commit.txt
+  tags: 
+    - imgker
+        

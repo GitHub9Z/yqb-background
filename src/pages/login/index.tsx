@@ -8,12 +8,13 @@ import {
 } from '@ant-design/icons';
 import {
     LoginFormPage,
+    ProForm,
     ProFormCaptcha,
     ProFormCheckbox,
     ProFormText,
 } from '@ant-design/pro-components';
 import { Button, Divider, message, Space, Tabs } from 'antd';
-import type { CSSProperties } from 'react';
+import { CSSProperties, useRef } from 'react';
 import { useState } from 'react';
 import * as API_login from '@/services/api/login'
 
@@ -28,6 +29,7 @@ const iconStyles: CSSProperties = {
 
 export default () => {
     const [loginType, setLoginType] = useState<LoginType>('phone');
+    const form = useRef()
     return (
         <div style={{ backgroundColor: 'white', height: '100vh', position: 'fixed', width: '100vw', top: 0, left: 0, zIndex: 999, boxSizing: 'border-box' }}>
             <LoginFormPage
@@ -160,12 +162,9 @@ export default () => {
                     </>
                 )}
                 {loginType === 'phone' && (
-                    <>
+                    <ProForm formRef={form}>
                         <ProFormText
                             fieldProps={{
-                                onChange(e) {
-                                    console.log('极了', e)
-                                },
                                 size: 'large',
                                 prefix: <MobileOutlined className={'prefixIcon'} />,
                             }}
@@ -205,8 +204,8 @@ export default () => {
                                 },
                             ]}
                             onGetCaptcha={async () => {
-                                await API_login({
-                                    phone: this.page_status.input_phone,
+                                let res = await API_login.SMS({
+                                    phone: form.current.getFieldValue('mobile')
                                 })
                             }}
                         />

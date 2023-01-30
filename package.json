@@ -1,0 +1,65 @@
+{
+  "name": "www.operationsystem.admin",
+  "repository": {
+    "type": "git",
+    "url": "http://git.dangbei.net/web/www.dbeisystem.admin.git"
+  },
+  "scripts": {
+    "start": "cross-env PORT=9528 umi dev",
+    "build": "umi build",
+    "postinstall": "umi generate tmp",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "test": "umi-test",
+    "test:coverage": "umi-test --coverage",
+    "openapi": "umi openapi"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/pro-card": "^1.18.21",
+    "@ant-design/pro-components": "^1.1.16",
+    "@ant-design/pro-descriptions": "^1.10.54",
+    "@ant-design/pro-layout": "^6.5.0",
+    "@ant-design/pro-table": "^2.67.1",
+    "ahooks": "next",
+    "ali-oss": "^6.17.1",
+    "array-move": "^4.0.0",
+    "echarts": "^5.4.1",
+    "jszip": "^3.10.1",
+    "marked": "^4.0.19",
+    "moment": "^2.29.1",
+    "react": "17.x",
+    "react-dom": "17.x",
+    "react-redux": "^8.0.2",
+    "redux": "^4.2.0",
+    "redux-thunk": "^2.4.1",
+    "umi": "^3.5.20",
+    "validate-color": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.0",
+    "@types/react-color": "^3.0.6",
+    "@types/react-dom": "^17.0.0",
+    "@umijs/plugin-openapi": "^1.3.2",
+    "@umijs/plugin-qiankun": "^2.35.2",
+    "@umijs/preset-react": "1.x",
+    "@umijs/test": "^3.5.20",
+    "array-move": "^4.0.0",
+    "cross-env": "^7.0.3",
+    "lint-staged": "^10.0.7",
+    "prettier": "^2.2.0",
+    "react-color": "^2.19.3",
+    "typescript": "^4.1.2",
+    "yorkie": "^2.0.0"
+  },
+  "version": "0.0.1"
+}

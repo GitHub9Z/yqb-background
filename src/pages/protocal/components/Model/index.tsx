@@ -5,7 +5,8 @@ import {
   ProFormTextArea,
   ProFormSelect,
   ProFormInstance,
-  ProFormDigit
+  ProFormDigit,
+  ProFormSwitch
 } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useRef } from 'react';
@@ -15,7 +16,6 @@ const handleFinish = async (e, id, reload) => {
   if (id) {
     await API_protocal.update({
       ...e,
-      tag: e?.tag?.toLocaleLowerCase(),
       id
     })
   } else {
@@ -64,9 +64,10 @@ export default ({ init, reload }) => {
       onFinish={e => handleFinish(e, init?.id, reload)}
     >
       <ProFormText name="title" label="名称" />
+      <ProFormText name="type" label="类目" />
       <ProFormTextArea name="hint" label="注释" />
-      <ProFormDigit name="sum" label="周期数" />
-      <ProFormDigit name="time" label="周期时长" />
+      <ProFormDigit name="sum" disabled={!!init} label="周期数" />
+      <ProFormDigit name="time" disabled={!!init} label="周期时长" />
       <ProFormSelect options={[{
         label: '次数',
         value: 1
@@ -76,9 +77,10 @@ export default ({ init, reload }) => {
       }, {
         label: '时长',
         value: 3
-      }]} width="sm" name="task_type" label="指标类型" />
-      <ProFormDigit name="task_num" label="指标数" />
-      <ProFormDigit name="bonus" label="合约金额" />
+      }]} width="sm" name="task_type" disabled={!!init} label="指标类型" />
+      <ProFormDigit name="task_num" disabled={!!init} label="指标数" />
+      <ProFormDigit name="bonus" disabled={!!init} label="合约金额" />
+      <ProFormSwitch name="status" initialValue={true} label="上架" />
     </ModalForm>
   );
 };

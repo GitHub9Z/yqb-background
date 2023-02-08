@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import type { RunTimeLayoutConfig, RequestConfig } from 'umi';
+import { RunTimeLayoutConfig, RequestConfig, history } from 'umi';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { message } from 'antd';
 
@@ -8,27 +8,21 @@ let isQiankunChildren = false;
 
 // http 请求异常处理函数
 const requestErrorHandler = (error: any) => {
-  if (!error.response && error.message === '取消请求') return
-  const { status, headers } = error.response;
-
-  const contentType = headers?.get('Content-Type');
-
-  let msg = `接口"${status}"异常`;
-
-  if (contentType && contentType?.includes('application/json')) {
-    const data = error.data;
-    msg = data?.errorMessage;
+  const { message: msg, status } = error.response;
+  if (msg) {
+    message.error(msg)
   }
   switch(status) {
     case 403: {
       localStorage.removeItem('token')
+      history.replace('/login')
       break
     }
   }
 };
 
 const requestHandler = (url: any, options: any) => {
-  options.headers['sc-token'] = localStorage.getItem('token')
+  options.headers['authorization'] = localStorage.getItem('token')
   return {
     url,
     options,

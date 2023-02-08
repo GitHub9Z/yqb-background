@@ -5,22 +5,31 @@ import {
   ProFormTextArea,
   ProFormSelect,
   ProFormInstance,
-  ProFormDigit
+  ProFormDigit,
+  ProFormSwitch
 } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useRef } from 'react';
-import * as API_shop from '@/services/api/shop'
+import * as API_vouchers from '@/services/api/vouchers'
+import * as API_protocal from '@/services/api/protocal'
 
 const handleFinish = async (e, id, reload) => {
   if (id) {
-    await API_shop.update({
+    await API_vouchers.update({
       ...e,
       id
     })
   } else {
-    await API_shop.create(e)
+    await API_vouchers.create({
+      ...e,
+      task_num: {
+        1: e.times,
+        2: e.money,
+        3: e.time
+      }
+    })
   }
-  reload?.()
+  reload()
   return true
 };
 
@@ -62,10 +71,30 @@ export default ({ init, reload }) => {
       }}
       onFinish={e => handleFinish(e, init?.id, reload)}
     >
-      <ProFormText name="title" label="门店名称" />
-      <ProFormText name="phone" label="联系方式" />
-      <ProFormDigit name="longitude" label="经度" />
-      <ProFormDigit name="latitude" label="纬度" />
+      <ProFormSelect
+            name="protocals"
+            label="适用协议"
+            request={async () => {
+              let { data } = await API_protocal.findProtocals({
+                page_size: 999
+              })
+              return data.data.map(_i => ({
+                value: _i.id,
+                label: _i.title
+              }))
+            }}
+            fieldProps={{
+              mode: 'multiple',
+            }}
+            placeholder="Please select favorite colors"
+            rules={[
+              { required: true, message: 'Please select your favorite colors!', type: 'array' },
+            ]}
+          />
+      <ProFormDigit name="sum" label="发行量" />
+      <ProFormDigit name="times" label="核销次数" />
+      <ProFormDigit name="money" label="核销金额" />
+      <ProFormDigit name="time" label="核销时长" />
     </ModalForm>
   );
 };

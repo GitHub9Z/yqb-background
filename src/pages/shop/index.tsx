@@ -37,26 +37,23 @@ const origin_columns: ProColumns[] = [
   },
   {
     title: '联系方式',
-    dataIndex: 'title',
-    width: 280,
+    dataIndex: 'phone',
+    width: 80,
     align: 'center',
   },
   {
     title: '门店名称',
-    dataIndex: 'sum',
+    dataIndex: 'title',
     width: 80,
     align: 'center',
-    render: (_, record) => (
-      <span>{record.sum}期</span>
-    ),
     hideInSearch: true
   },
   {
     title: '经纬度',
+    width: 280,
     render: (_, record) => (
-      <span></span>
+      <span>{record.longitude}, {record.latitude}</span>
     ),
-    width: 120,
     align: 'center',
     hideInSearch: true
   },
@@ -66,8 +63,10 @@ const origin_columns: ProColumns[] = [
     width: 180,
     hideInSearch: true,
     render: (_, record, __, action) => [
-        <a style={{marginRight: '12px'}}>编辑</a>,
-        <a href={record.url}>删除</a>
+      <Model reload={() => {
+        action?.reload()
+      }} init={record}/>,
+        <a href={record.url} style={{ marginLeft: '10px' }}>删除</a>
     ]
   }
 ];
@@ -84,7 +83,7 @@ export default () => {
         columns={origin_columns}
         actionRef={actionRef}
         request={async (params = {}, sort, filter) => {
-          return API_protocal.findProtocals({
+          return API_shop.findShops({
             params: {
               ...params,
               current: (parseInt(params.current) - 1)

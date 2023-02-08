@@ -11,7 +11,7 @@ import { ChromeOutlined, UploadOutlined } from '@ant-design/icons';
 
 import request from 'umi-request';
 
-const generate_task = (record: any)=> {
+const generate_task = (record: any) => {
   const generate_date = (time: number) => {
     if (!(time % 365)) {
       return (time / 365 + '年')
@@ -41,8 +41,8 @@ const generate_task = (record: any)=> {
     }
     // 作为返回值返回
     return res
-}
-  switch(record.task_type) {
+  }
+  switch (record.task_type) {
     case 1: {
       return `消费${record.task_num}次 / ${generate_date(record.time)}`
       break
@@ -56,7 +56,7 @@ const generate_task = (record: any)=> {
       break
     }
   }
-  
+
 }
 // 开关Dom组件渲染
 const swithRender = (_: any, record: any) => {
@@ -85,34 +85,31 @@ const origin_columns: ProColumns[] = [
   },
   {
     title: '签约用户',
-    dataIndex: 'title',
-    width: 280,
+    dataIndex: 'user_id',
+    width: 80,
     align: 'center',
   },
   {
     title: '合约时间',
     dataIndex: 'sum',
-    width: 80,
+    width: 280,
     align: 'center',
     render: (_, record) => (
-      <span>{record.sum}期</span>
+      <span>{new Date(record.start_time).toLocaleString()} - {new Date(record.end_time).toLocaleString()}</span>
     ),
     hideInSearch: true
   },
   {
     title: '合约进度',
-    render: (_, record) => (
-      <span>{generate_task(record)}</span>
-    ),
+    dataIndex: 'finish_num',
     width: 120,
     align: 'center',
     hideInSearch: true
   }
 ];
 
-export default () => {
+export default ({ match: { params: { id } } }) => {
   const actionRef = useRef<ActionType>();
-
 
   /********* 搜索 */
   return (
@@ -123,10 +120,9 @@ export default () => {
         actionRef={actionRef}
         request={async (params = {}, sort, filter) => {
           return API_promise.findPromises({
-            params: {
-              ...params,
-              current: (parseInt(params.current) - 1)
-            }
+            protocal_id: id,
+            ...params,
+            current: (parseInt(params.current) - 1)
           }).then(res => res.data);
         }}
         editable={{

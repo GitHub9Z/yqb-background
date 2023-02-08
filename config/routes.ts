@@ -31,6 +31,19 @@ export default {
     icon: 'GitlabOutlined',
     component: '@/pages/user/index'
   }, {
+    name: '券码管理',
+    path: '/vouchers',
+    icon: 'GitlabOutlined',
+    hideChildrenInMenu: true,
+    routes: [{
+      path: './',
+      component: '@/pages/vouchers/index',
+    }, {
+      path: './voucher/:id',
+      name: '券码列表',
+      component: '@/pages/vouchers/pages/voucher/index'
+    }]
+  }, {
     name: '设置中心',
     path: '/setting',
     icon: 'GitlabOutlined',

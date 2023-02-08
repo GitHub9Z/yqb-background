@@ -31,7 +31,7 @@ const Layout = (props) => {
     }
 
     const handleLoginClick = async () => {
-        history.push('/login')
+        history.replace('/login')
     }
     return (
         <ProLayout

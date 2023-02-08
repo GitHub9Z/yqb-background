@@ -4,7 +4,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
 import DbSwitch from '@/components/DbSwitch';
-import * as API_protocal from '@/services/api/protocal'
+import * as API_vouchers from '@/services/api/vouchers'
 import { history } from 'umi';
 
 import Model from './components/Model'
@@ -12,7 +12,7 @@ import { ChromeOutlined, UploadOutlined } from '@ant-design/icons';
 
 import request from 'umi-request';
 
-const generate_task = (record: any)=> {
+const generate_task = (record: any) => {
   const generate_date = (time: number) => {
     if (!(time % 365)) {
       return (time / 365 + '年')
@@ -42,8 +42,8 @@ const generate_task = (record: any)=> {
     }
     // 作为返回值返回
     return res
-}
-  switch(record.task_type) {
+  }
+  switch (record.task_type) {
     case 1: {
       return `消费${record.task_num}次 / ${generate_date(record.time)}`
       break
@@ -57,7 +57,7 @@ const generate_task = (record: any)=> {
       break
     }
   }
-  
+
 }
 // 开关Dom组件渲染
 const swithRender = (_: any, record: any) => {
@@ -79,61 +79,15 @@ const ProcessMap = {
 
 const origin_columns: ProColumns[] = [
   {
-    title: '状态',
+    title: '批次号',
     width: 120,
-    dataIndex: 'status',
-    initialValue: 'true',
-    valueEnum: {
-      false: { text: '关闭', status: 'Default' },
-      true: { text: '已上线', status: 'Success' },
-    },
+    dataIndex: 'id'
   },
   {
-    title: '合约号',
-    dataIndex: 'id',
-    width: 80,
-    align: 'center',
-  },
-  {
-    title: '类目',
-    dataIndex: 'type',
-    width: 120,
-    align: 'center',
-  },
-  {
-    title: '名称',
-    dataIndex: 'title',
-    width: 280,
-    align: 'center',
-  },
-  {
-    title: '签约期数',
+    title: '发行量',
     dataIndex: 'sum',
-    width: 80,
+    width: 120,
     align: 'center',
-    render: (_, record) => (
-      <span>{record.sum}期</span>
-    ),
-    hideInSearch: true
-  },
-  {
-    title: '每期指标',
-    render: (_, record) => (
-      <span>{generate_task(record)}</span>
-    ),
-    width: 200,
-    align: 'center',
-    hideInSearch: true
-  },
-  {
-    title: '金额',
-    dataIndex: 'bonus',
-    width: 80,
-    align: 'center',
-    render: (_, record) => (
-      <span>{record.bonus}元</span>
-    ),
-    hideInSearch: true
   },
   {
     title: '操作',
@@ -141,12 +95,12 @@ const origin_columns: ProColumns[] = [
     width: 180,
     hideInSearch: true,
     render: (_, record, __, action) => [
-        <a onClick={() => {
-          history.push({ pathname: `./protocal/promise/${record.id}` });
-        }} style={{marginRight: '12px'}}>签约列表</a>,
-        <Model reload={() => {
-          action.reload()
-        }} init={record}/>
+      <a onClick={() => {
+        history.push({ pathname: `./vouchers/voucher/${record.id}` });
+      }} style={{ marginRight: '12px' }}>券码列表</a>,
+      <a onClick={() => {
+
+      }} style={{ marginRight: '12px' }}>删除</a>
     ]
   }
 ];
@@ -163,12 +117,16 @@ export default () => {
         columns={origin_columns}
         actionRef={actionRef}
         request={async (params = {}, sort, filter) => {
-          return API_protocal.findProtocals({
-            params: {
-              ...params,
-              current: (parseInt(params.current) - 1)
+          return API_vouchers.findVouchers({
+            ...params,
+            current: (parseInt(params.current) - 1),
+            page_size: parseInt(params.pageSize)
+          }).then(res => {
+            return {
+              total: res.data.count,
+              data: res.data.data
             }
-          }).then(res => res.data);
+          });
         }}
         editable={{
           type: 'multiple',
@@ -190,7 +148,7 @@ export default () => {
         toolBarRender={() => [
           <Model reload={() => {
             actionRef.current?.reload()
-          }}/>
+          }} />
         ]}
       />
     </PageContainer>

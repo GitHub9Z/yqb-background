@@ -17,6 +17,7 @@ import { Button, Divider, message, Space, Tabs } from 'antd';
 import { CSSProperties, useRef } from 'react';
 import { useState } from 'react';
 import * as API_login from '@/services/api/login'
+import { history } from 'umi';
 
 type LoginType = 'phone' | 'account';
 
@@ -37,6 +38,18 @@ export default () => {
                 logo={require('../../assets/logo.jpg')}
                 title="易签多"
                 subTitle="全球最大的在线签约平台"
+                onFinish={async() => {
+                    let res = await API_login.LOGIN({
+                        phone: form.current.getFieldValue('mobile'),
+                        sms: form.current.getFieldValue('captcha')
+                    })
+                    if (res?.data?.token) {
+                        localStorage.setItem('token', res?.data?.token)
+                        history.replace('/index')
+                    } else {
+                        form.current.resetFields()
+                    }
+                }}
                 activityConfig={{
                     style: {
                         boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.2)',
@@ -162,7 +175,11 @@ export default () => {
                     </>
                 )}
                 {loginType === 'phone' && (
-                    <ProForm formRef={form}>
+                    <ProForm formRef={form} submitter={{
+                        render() {
+                            return null
+                        }
+                    }}>
                         <ProFormText
                             fieldProps={{
                                 size: 'large',
@@ -207,9 +224,10 @@ export default () => {
                                 let res = await API_login.SMS({
                                     phone: form.current.getFieldValue('mobile')
                                 })
+                                if (!res) throw new Error()
                             }}
                         />
-                    </>
+                    </ProForm>
                 )}
                 <div
                     style={{
